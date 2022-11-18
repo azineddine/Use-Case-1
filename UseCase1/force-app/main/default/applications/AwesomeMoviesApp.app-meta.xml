@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#39BA9A</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <label>AwesomeMoviesApp</label>
+    <navType>Standard</navType>
+    <tabs>MoviesManagement</tabs>
+    <tabs>Actor__c</tabs>
+    <tabs>Movie__c</tabs>
+    <tabs>MovieActor__c</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>AwesomeMoviesApp_UtilityBar</utilityBar>
+</CustomApplication>
