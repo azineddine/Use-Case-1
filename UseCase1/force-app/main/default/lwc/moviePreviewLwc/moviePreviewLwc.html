@@ -1,0 +1,40 @@
+<template>
+    <lightning-card  title="Movie Details">
+      
+     <template if:true={movieId}>
+        <lightning-record-form
+        object-api-name={objectApiName}
+        record-id={movieId}
+        fields={fields}
+        onsuccess={handleSuccess}
+        mode={mode}
+    >
+    </lightning-record-form>
+    <template if:true={isViewMode}>
+        <div class="slds-grid_align-center">
+            <lightning-button
+                variant="brand"
+                class="slds-m-top_small slds-m-left_x-small"
+                type="submit"
+                label="Update"
+                onclick={handleUpdateBtn}
+            >
+            </lightning-button>
+            <lightning-button
+                variant="brand"
+                class="slds-m-top_small slds-m-left_x-small"
+                label="Delete"
+                onclick={handleDeleteBtn}
+            ></lightning-button>
+        </div>
+    </template>
+     </template>
+
+     <template if:false={movieId}>
+        <lightning-layout class="slds-grid_align-center">
+            <p>Click a tile to preview</p>
+        </lightning-layout>
+     </template>
+   
+    </lightning-card>
+</template>
