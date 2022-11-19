@@ -5,6 +5,10 @@
         <default>false</default>
         <visible>true</visible>
     </applicationVisibilities>
+    <classAccesses>
+        <apexClass>MoviesController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <custom>false</custom>
     <fieldPermissions>
         <editable>true</editable>
@@ -39,6 +43,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Movie__c.MaleActorsPercentage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Movie__c.name__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <layoutAssignments>
