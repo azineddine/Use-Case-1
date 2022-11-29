@@ -1,11 +1,21 @@
 <template>
   <lightning-card onclick={previewMovie}>
-    <img
+    <template if:true={movie.Picture__c}>
+      <img
       style="max-height: 400px"
       alt="Image on T.O."
-      src="https://www.prospecthill.com/wp-content/uploads/2016/09/film-2.jpg"
+      src={movie.Picture__c}
     />
-
+    </template>
+    <template if:false={movie.Picture__c}>
+      <img
+      style="height: 200px"
+      alt="Image on T.O."
+      src="https://www.reelviews.net/resources/img/default_poster.jpg"
+    />
+    </template>
+   
+    
     <p class="slds-p-horizontal_small">Name : {movie.Name}</p>
 
     <p class="slds-p-horizontal_small">Category : {movie.Category__c}</p>

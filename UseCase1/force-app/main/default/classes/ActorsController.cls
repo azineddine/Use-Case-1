@@ -1,8 +1,8 @@
 public with sharing class ActorsController {
   @AuraEnabled(cacheable=true scope='global')
   public static List<LookupSearchResult> search(
-    String searchTerm,
-    List<String> selectedIds
+    String searchTerm
+    //,List<String> selectedIds
   ) {
     if (searchTerm == '' || searchTerm == null) {
       return getAllActors();
@@ -49,5 +49,19 @@ public with sharing class ActorsController {
 
     return mapActorToLookUpSearch(actors);
   }
+
+  @AuraEnabled(cacheable=true)
+  public static List<Actor__C> getActorsByMovie(ID movieId) {
+    List<Actor__C> actors = [
+      SELECT id, name 
+      FROM actor__c
+      WHERE ID In 
+      (SELECT Actor__c FROM movieActor__c WHERE movie__c = :movieId)
+      WITH SECURITY_ENFORCED
+    ];
+
+    return actors;
+  }
+
 
 }

@@ -13,8 +13,9 @@
 
       <c-new-movie-modal
         isopen={isOpen}
-        onclose={handleClose}
-      ></c-new-movie-modal>
+        onclosemodal={handleCloseModal}
+        onrefresh={refreshMoviesList}
+      ></c-new-movie-modal> 
 
       <lightning-layout class="slds-align_absolute-center">
         <c-filter-movies-lwc onsearch={handleNewSearch}></c-filter-movies-lwc>

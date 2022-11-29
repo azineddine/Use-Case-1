@@ -1,20 +1,22 @@
-import { LightningElement, api, wire } from "lwc";
+import { LightningElement, api, wire, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
-import { createRecord } from "lightning/uiRecordApi";
-import { getObjectInfo } from 'lightning/uiObjectInfoApi';
+import { getRecord } from "lightning/uiRecordApi";
 
 import NAME_FIELD from "@salesforce/schema/Movie__c.Name";
 import MOVIE_OBJECT from "@salesforce/schema/Movie__c";
+import ACTOR_OBJECT from "@salesforce/schema/Actor__c";
 import MOVIE_ACTOR_OBJECT from "@salesforce/schema/MovieActor__c";
 
 import CATEGORY_FIELD from "@salesforce/schema/Movie__c.Category__c";
 import DESCRIPTION_FIELD from "@salesforce/schema/Movie__c.Description__c";
 import RELEASE_DATE_FIELD from "@salesforce/schema/Movie__c.Release_date__c";
+import PICTURE_FIELD from "@salesforce/schema/Movie__c.Picture__c";
+import RATING_FIELD from "@salesforce/schema/Movie__c.Rating__c";
+import apexSearch from "@salesforce/apex/ActorsController.search";
+import apexCreateMovie from "@salesforce/apex/MoviesController.createMovie";
 
-import apexSearch from '@salesforce/apex/ActorsController.search';
-import apexCreateMovie from '@salesforce/apex/MoviesController.createMovie';
-
+import { getObjectInfo, getPicklistValues } from "lightning/uiObjectInfoApi";
 
 
 const CREATE_SUCCESS_TITLE = "Created with success";
@@ -25,74 +27,127 @@ const CREATE_ERROR_TITLE = "Error creating record";
 const CREATE_ERROR_VARIANT = "Error";
 
 export default class NewMovieModal extends LightningElement {
-  fields = [NAME_FIELD, CATEGORY_FIELD, DESCRIPTION_FIELD, RELEASE_DATE_FIELD];
+  fields = [
+    NAME_FIELD,
+    CATEGORY_FIELD,
+    DESCRIPTION_FIELD,
+    RELEASE_DATE_FIELD,
+    PICTURE_FIELD
+  ];
   nameField = NAME_FIELD;
   categoryField = CATEGORY_FIELD;
   descriptionField = DESCRIPTION_FIELD;
   releaseDateField = RELEASE_DATE_FIELD;
-
   objectApiName = MOVIE_OBJECT;
+  pictureField = PICTURE_FIELD;
 
+  @track
   objectData = {};
   selectedActorIds = [];
+  initialSelection = [];
 
-  // new fields
-  name;
+  @api
+  movie;
 
-  statusOptions = [
-    { value: "new", label: "New", description: "A new item" },
-    {
-      value: "in-progress",
-      label: "In Progress",
-      description: "Currently working on this item"
-    },
-    {
-      value: "finished",
-      label: "Finished",
-      description: "Done working on this item"
-    }
-  ];
+  hasRendered = false;
+  _isopen = false;
 
-  @api isopen;
+  defaultMovieRecordTypeId;
+  @track
+  categoryPicklistValues = [];
 
   @wire(getObjectInfo, { objectApiName: MOVIE_OBJECT })
-    objectInfo;
-    
-
-
-  handleSearchActor(event) {
-    console.log('detail:',JSON.stringify(event.detail));
-    const lookupElement = event.target;
-    apexSearch(event.detail).
-    then(results => {
-      console.log('success', results);
-      lookupElement.setSearchResults(results);
-    })
-    .catch(error => {
-      console.log('error', error);
-    })
+  objectInfo({ data, error }) {
+    if (data) {
+      this.defaultMovieRecordTypeId = data.defaultRecordTypeId;
+    }
   }
 
-  handleSelectionActor(event){
+  @wire(getPicklistValues, {
+    recordTypeId: "$defaultMovieRecordTypeId",
+    fieldApiName: CATEGORY_FIELD
+  })
+  categoryPicklist({data,error}) {
+    if(data) {
+      this.categoryPicklistValues = data.values;
+    }
+  }
+
+  @api
+  get isopen() {
+    return this._isopen;
+  }
+  set isopen(value) {
+    this.hasRendered = false;
+    this._isopen = value;
+  }
+
+  /*  @wire(getObjectInfo, { objectApiName: MOVIE_OBJECT })
+  objectInfo; */
+
+  // is called each time the movie is updated
+  renderedCallback() {
+    if (
+      this.movie &&
+      Object.keys(this.movie).length > 0 &&
+      !this.hasRendered
+      // && Object.keys(this.objectData).length === 0
+    ) {
+
+      this.hasRendered = true;
+
+      this.objectData = { ...this.movie };
+
+      if (this.movie.Actors) {
+        this.initialSelection = this.movie.Actors.map((actor) => {
+          return {
+            id: actor.Id,
+            sObjectType: ACTOR_OBJECT,
+            icon: null,
+            title: actor.Name,
+            subtitle: actor.Id
+          };
+        });
+        this.selectedActorIds = this.initialSelection.map((actor) => {
+          return actor.id
+        });
+      }
+    }
+  }
+
+  handleSearchActor(event) {
+    const lookupElement = event.target;
+    apexSearch(event.detail)
+      .then((results) => {
+        lookupElement.setSearchResults(results);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }
+
+  handleSelectionActor(event) {
     this.selectedActorIds = event.detail;
- }
+  }
 
-
-    handleFieldChange(event) {
+  handleFieldChange(event) {
     this.objectData[event.target.name] = event.target.value;
   }
 
-  createMovieHandler() {
-  
-    apexCreateMovie({movie :  this.objectData, actorIds : this.selectedActorIds})
+  handleRatingChange(event) {
+    this.objectData[RATING_FIELD.fieldApiName] = event.detail.rating;
+  }
+
+  handleMovieCreation() {
+    apexCreateMovie({ movie: this.objectData, actorIds: this.selectedActorIds })
       .then((createdMovie) => {
-        this.sendEvent();
+        this.handleCloseModal();
+        this.handleRefreshMovies();
         this.showToastMessage(
           CREATE_SUCCESS_TITLE,
           CREATE_SUCCESS_MESSAGE,
           CREATE_SUCCESS_VARIANT
         );
-       
       })
       .catch((error) => {
         console.log(error);
@@ -101,14 +156,25 @@ export default class NewMovieModal extends LightningElement {
           error.body.message,
           CREATE_ERROR_VARIANT
         );
-      }); 
+      });
   }
 
-  handleCancel() {
+  handleCloseModal() {
+    this.objectData = {};
+    const closeEvent = new CustomEvent("closemodal");
+    this.dispatchEvent(closeEvent);
+  }
+
+  handleRefreshMovies() {
+    const refreshEvent = new CustomEvent("refresh");
+    this.dispatchEvent(refreshEvent);
+  }
+
+  /*  handleCancel() {
     this.sendEvent();
   }
-
-  handleSuccess() {
+ */
+  /* handleSuccess() {
     this.showToastMessage(
       CREATE_SUCCESS_TITLE,
       CREATE_SUCCESS_MESSAGE,
@@ -116,12 +182,12 @@ export default class NewMovieModal extends LightningElement {
     );
 
     this.sendEvent();
-  }
+  } */
 
-  sendEvent() {
+  /* sendEvent() {
     const modalEvent = new CustomEvent("close");
     this.dispatchEvent(modalEvent);
-  }
+  } */
 
   showToastMessage(title, message, variant) {
     const event = new ShowToastEvent({

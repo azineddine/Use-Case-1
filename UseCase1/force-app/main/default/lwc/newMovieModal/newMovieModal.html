@@ -1,91 +1,69 @@
 <template>
-  <template if:true={isopen}>
-    <section
-      role="dialog"
-      tabindex="-1"
-      aria-modal="true"
-      aria-labelledby="modal-heading-01"
-      class="slds-modal slds-fade-in-open"
-    >
-      <div class="slds-modal__container">
-        <div class="slds-modal__header">
-          <h1
-            id="modal-heading-01"
-            class="slds-modal__title slds-hyphenate"
-            tabindex="-1"
-          >
-            Create Movie
-          </h1>
-        </div>
-        <div
-          class="slds-modal__content slds-p-around_medium"
-          id="modal-content-id-1"
-        >
-          <lightning-card title="LdsCreateRecord" icon-name="standard:record">
-            <div class="slds-m-around_medium">
-              <lightning-input
-                name={nameField.fieldApiName}
-                label="Name"
-                onchange={handleFieldChange}
-                class="slds-m-bottom_x-small"
-                required
-              ></lightning-input>
-              <lightning-input
-                name={categoryField.fieldApiName}
-                label="category"
-                onchange={handleFieldChange}
-                class="slds-m-bottom_x-small"
-                required
-              ></lightning-input>
-              <lightning-input
-                name={descriptionField.fieldApiName}
-                label="description"
-                onchange={handleFieldChange}
-                class="slds-m-bottom_x-small"
-              ></lightning-input>
-              <lightning-input
-                name={releaseDateField.fieldApiName}
-                type="date"
-                label="Release Date"
-                onchange={handleFieldChange}
-                class="slds-m-bottom_x-small"
-                required
-              ></lightning-input>
+  <c-custom-modal
+    onclosemodal={handleCloseModal}
+    onsubmitmodal={handleMovieCreation}
+    isopen={isopen}
+  >
+    <span slot="title">New Movie</span>
+    <div class="slds-m-around_medium">
+      <template if:true={objectData.Picture__c}>
+        <img
+          style="max-height: 200px"
+          alt="Image on T.O."
+          src={objectData.Picture__c}
+        />
+      </template>
+      <lightning-input
+        name={nameField.fieldApiName}
+        label="Name"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        required
+        value={objectData.Name}
+      ></lightning-input>
+      <lightning-combobox
+        name={categoryField.fieldApiName}
+        label="Category"
+        onchange={handleFieldChange}
+        options={categoryPicklistValues}
+        value={objectData.Category__c}
+        required
+      >
+      </lightning-combobox>
+      <lightning-input
+        name={descriptionField.fieldApiName}
+        label="description"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        value={objectData.Description__c}
+      ></lightning-input>
+      <lightning-input
+        name={releaseDateField.fieldApiName}
+        type="date"
+        label="Release Date"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        required
+        value={objectData.Release_date__c}
+      ></lightning-input>
+      <lightning-input
+        name={pictureField.fieldApiName}
+        label="Picture"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        value={objectData.Picture__c}
+      ></lightning-input>
+      <c-star-ratings rating={objectData.Rating__c} onratingchange={handleRatingChange} static-color="#f6da3f">
 
-              <!-- <lightning-combobox
-                name="status"
-                label="Status"
-                onchange={handleFieldChange}
-                options={statusOptions}
-              >
-              </lightning-combobox> -->
-
-              <c-lookup
-                onsearch={handleSearchActor}
-                onselectionchange={handleSelectionActor}
-                is-multi-entry="true"
-                label="Actors"
-              >
-              </c-lookup>
-              <lightning-layout horizontal-align="space">
-                <lightning-button
-                  label="Create Account"
-                  variant="brand"
-                  onclick={createMovieHandler}
-                  class="slds-var-m-left_x-small"
-                ></lightning-button>
-                <lightning-button
-                  label="Cancel"
-                  variant="brand"
-                  onclick={handleCancel}
-                  class="slds-var-m-left_x-small"
-                ></lightning-button>
-              </lightning-layout>
-            </div>
-          </lightning-card>
-        </div>
-      </div>
-    </section>
-    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
-  </template>
+      </c-star-ratings>
+      <c-lookup
+        onsearch={handleSearchActor}
+        onselectionchange={handleSelectionActor}
+        is-multi-entry="true"
+        label="Actors"
+        selection={initialSelection}
+      >
+      </c-lookup>
+    </div>
+  </c-custom-modal>
 </template>

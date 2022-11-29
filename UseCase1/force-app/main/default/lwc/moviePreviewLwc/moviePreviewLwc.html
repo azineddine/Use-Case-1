@@ -1,15 +1,55 @@
 <template>
   <lightning-card title="Movie Details">
     <template if:true={movieId}>
-      <lightning-record-form
-        object-api-name={objectApiName}
-        record-id={movieId}
-        fields={fields}
-        onsuccess={handleSuccess}
-        mode={mode}
-      >
-      </lightning-record-form>
-      <template if:true={isViewMode}>
+      <div class="slds-region_narrow" style="width: 360px">
+        <dl class="slds-dl_horizontal slds-m-around_small">
+          <dt class="slds-dl_horizontal__label">Name :</dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Name}</dd>
+          <dt class="slds-dl_horizontal__label">Release Date :</dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Release_date__c}</dd>
+          <dt class="slds-dl_horizontal__label">Category :</dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Category__c}</dd>
+          <dt class="slds-dl_horizontal__label">Description :</dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Description__c}</dd>
+          <dt class="slds-dl_horizontal__label">Rating :</dt>
+          <dd class="slds-dl_horizontal__detail">
+            <c-star-ratings
+              read-only-star
+              static-color="#f6da3f"
+              rating={movie.Rating__c}
+            >
+            </c-star-ratings>
+          </dd>
+
+          <template if:true={hasActors}>
+            <dt class="slds-dl_horizontal__label">Actors :</dt>
+            <dd class="slds-dl_horizontal__detail">
+              <ul>
+                <template for:each={movie.Actors} for:item="actor">
+                  <li key={actor.id}>{actor.Name}</li>
+                </template>
+              </ul>
+            </dd>
+          </template>
+
+          <template if:true={movie.Picture__c}>
+            <img
+              style="max-height: 400px"
+              alt="Image on T.O."
+              src={movie.Picture__c}
+            />
+          </template>
+        </dl>
+      </div>
+
+      <c-new-movie-modal
+        isopen={isOpen}
+        onclosemodal={handleCloseModal}
+        onrefresh={refreshMoviesList}
+        movie={movie}
+      ></c-new-movie-modal>
+
+     <!--  <template if:true={isViewMode}> -->
         <div class="slds-grid_align-center">
           <lightning-button
             variant="brand"
@@ -26,7 +66,7 @@
             onclick={handleDeleteBtn}
           ></lightning-button>
         </div>
-      </template>
+     <!--  </template> -->
     </template>
 
     <template if:false={movieId}>

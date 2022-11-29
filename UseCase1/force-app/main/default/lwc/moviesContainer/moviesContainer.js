@@ -28,16 +28,15 @@ export default class MoviesContainer extends LightningElement {
     unsubscribe(this.subscription);
   }
 
-  handleClose() {
-    this.isOpen = false;
-    this.refreshMoviesList();
-  }
-
   refreshMoviesList() {
     this.template.querySelector("c-movies-results-lwc").refresh();
   }
 
   openModal() {
     this.isOpen = true;
+  }
+
+  handleCloseModal() {
+    this.isOpen = false;
   }
 }
