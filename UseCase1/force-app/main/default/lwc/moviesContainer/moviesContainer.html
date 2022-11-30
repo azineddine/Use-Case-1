@@ -18,10 +18,10 @@
       ></c-new-movie-modal>
 
       <lightning-layout class="slds-align_absolute-center">
-        <c-filter-movies-lwc onsearch={handleNewSearch}></c-filter-movies-lwc>
+        <c-filter-movies onsearch={handleNewSearch}></c-filter-movies>
       </lightning-layout>
 
-      <c-movies-results-lwc search-value={searchValue}></c-movies-results-lwc>
+      <c-movies-results search-value={searchValue}></c-movies-results>
     </lightning-card>
   </div>
 </template>

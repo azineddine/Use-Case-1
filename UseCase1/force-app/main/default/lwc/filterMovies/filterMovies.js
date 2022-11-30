@@ -1,6 +1,6 @@
 import { LightningElement } from 'lwc';
 
-export default class FilterMoviesLwc extends LightningElement {
+export default class FilterMovies extends LightningElement {
 
 
     handleSearchMovieChange(event) {

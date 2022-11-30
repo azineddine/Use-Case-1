@@ -13,8 +13,8 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>moviePreviewLwc</componentName>
-                <identifier>c_moviePreviewLwc</identifier>
+                <componentName>moviePreview</componentName>
+                <identifier>c_moviePreview</identifier>
             </componentInstance>
         </itemInstances>
         <name>column2</name>

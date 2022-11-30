@@ -50,7 +50,7 @@ public with sharing class ActorsController {
     return mapActorToLookUpSearch(actors);
   }
 
-  @AuraEnabled(cacheable=true)
+  //@AuraEnabled
   public static List<Actor__C> getActorsByMovie(ID movieId) {
     List<Actor__C> actors = [
       SELECT id, name 

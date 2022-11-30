@@ -28,7 +28,7 @@ export default class MoviesContainer extends LightningElement {
   }
 
   refreshMoviesList() {
-    this.template.querySelector("c-movies-results-lwc").refresh();
+    this.template.querySelector("c-movies-results").refresh();
   }
 
   openModal() {

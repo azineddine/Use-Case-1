@@ -1,3 +1,11 @@
+/**
+ * @description       : 
+ * @author            : azineddine@salesforce.com
+ * @group             : 
+ * @last modified on  : 11-30-2022
+ * @last modified by  : azineddine@salesforce.com
+**/
+
 public with sharing class MoviesController {
   @AuraEnabled(cacheable=true)
   public static List<Movie__c> getAllMovies() {

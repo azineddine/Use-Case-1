@@ -11,11 +11,15 @@ import {
   deleteRecord,
   getRecordNotifyChange
 } from "lightning/uiRecordApi";
+
+// Controllers
 import getActorsByMovie from "@salesforce/apex/ActorsController.getActorsByMovie";
 
+// Message Channels
 import MOVIES_PREVIEW_MESSAGE from "@salesforce/messageChannel/Movies__c";
 import REFRESH_LIST from "@salesforce/messageChannel/Refresh_List__c";
 
+// Fields
 import NAME_FIELD from "@salesforce/schema/Movie__c.Name";
 import MOVIE_OBJECT from "@salesforce/schema/Movie__c";
 import CATEGORY_FIELD from "@salesforce/schema/Movie__c.Category__c";
@@ -25,6 +29,11 @@ import PICTURE_FIELD from "@salesforce/schema/Movie__c.Picture__c";
 import RATING_FIELD from "@salesforce/schema/Movie__c.Rating__c";
 import ID from "@salesforce/schema/Movie__c.Id";
 
+// Custom Labels
+import clickHereToPreview from "@salesforce/label/c.clickTileToPreview"
+
+
+// Constants
 const DELETE_SUCCESS_TITLE = "Delete with success";
 const DELETE_SUCCESS_MESSAGE = "You have deleted your record successfully";
 const DELETE_SUCCESS_VARIANT = "success";
@@ -50,8 +59,8 @@ export default class RecordFormExample extends LightningElement {
   @track
   movie = {};
   movieActors = [];
-  hasActors;
-
+  //hasActors;
+  clickHereToPreviewLabel = clickHereToPreview
 
   @wire(getRecord, { recordId: "$movieId", fields: MOVIE_FIELDS })
   getMovie({ data, error }) {
@@ -59,18 +68,28 @@ export default class RecordFormExample extends LightningElement {
       for (const [key, value] of Object.entries(data.fields)) {
         this.movie[key] = value.value;
       }
-      this.movie[ID] = data.ID;
+
+      getActorsByMovie({movieId: this.movieId}).then((actors) => {
+        this.movie.Actors = actors;
+      })
     }
+
+    
   }
 
-  @wire(getActorsByMovie, { movieId: "$movieId" })
-  getActors({ data, error }) {
+ // @wire(getActorsByMovie, { movieId: "$movieId" })
+/*   getActors({ data, error }) {
     this.movieActors = data;
-    this.hasActors = data && data.length > 0;
+   // this.hasActors = data && data.length > 0;
     if (data) {
       this.movie.Actors = [...data];
     }
+  } */
+
+  get hasActors() {
+    return this.movie && this.movie.Actors && this.movie.Actors.length > 0 ;
   }
+
 
   connectedCallback() {
     this.subscription = subscribe(
@@ -125,5 +144,8 @@ export default class RecordFormExample extends LightningElement {
   refreshMoviesList() {
     publish(this.messageContext, REFRESH_LIST);
     getRecordNotifyChange([{ recordId: this.movieId }]);
+    getActorsByMovie({movieId : this.movieId}).then((data) => {
+      console.log("movieActors : ", data);
+    })
   }
 }
