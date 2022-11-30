@@ -1,28 +1,72 @@
 <template>
-    <template if:true={isopen}>
-        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
-            <div class="slds-modal__container">
-            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
-            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
-            <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
-            </svg>
-            <span class="slds-assistive-text">Cancel and close</span>
-            </button>
-            <div class="slds-modal__header">
-            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">Create Movie</h1>
-            </div>
-            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-            <lightning-record-form
-                object-api-name={objectApiName}
-                fields={fields}
-                onsuccess={handleSuccess}
-                oncancel={handleCancel}
-            >
-            </lightning-record-form>
-            
-            </div>
-            </div>
-            </section>
-            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
-    </template>
+  <c-custom-modal
+    onclosemodal={handleCloseModal}
+    onsubmitmodal={handleMovieCreation}
+    isopen={isopen}
+  >
+    <span slot="title">New Movie</span>
+    <div class="slds-m-around_medium">
+      <template if:true={objectData.Picture__c}>
+        <img
+          style="max-height: 200px"
+          alt="Image on T.O."
+          src={objectData.Picture__c}
+        />
+      </template>
+      <lightning-input
+        name={nameField.fieldApiName}
+        label="Name"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        required
+        value={objectData.Name}
+      ></lightning-input>
+      <lightning-combobox
+        name={categoryField.fieldApiName}
+        label="Category"
+        onchange={handleFieldChange}
+        options={categoryPicklistValues}
+        value={objectData.Category__c}
+        required
+      >
+      </lightning-combobox>
+      <lightning-input
+        name={descriptionField.fieldApiName}
+        label="description"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        value={objectData.Description__c}
+      ></lightning-input>
+      <lightning-input
+        name={releaseDateField.fieldApiName}
+        type="date"
+        label="Release Date"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        required
+        value={objectData.Release_date__c}
+      ></lightning-input>
+      <lightning-input
+        name={pictureField.fieldApiName}
+        label="Picture"
+        onchange={handleFieldChange}
+        class="slds-m-bottom_x-small"
+        value={objectData.Picture__c}
+      ></lightning-input>
+      <c-lookup
+        onsearch={handleSearchActor}
+        onselectionchange={handleSelectionActor}
+        is-multi-entry="true"
+        label="Actors"
+        selection={initialSelection}
+      >
+      </c-lookup>
+      <c-star-ratings
+        rating={objectData.Rating__c}
+        onratingchange={handleRatingChange}
+        static-color="#f6da3f"
+      >
+      </c-star-ratings>
+    </div>
+  </c-custom-modal>
 </template>

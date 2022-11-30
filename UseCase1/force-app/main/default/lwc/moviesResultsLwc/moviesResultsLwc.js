@@ -1,16 +1,17 @@
-import { LightningElement, wire, api } from 'lwc';
-import searchMovies from '@salesforce/apex/MoviesController.searchMovies';
+import { LightningElement, wire, api } from "lwc";
+import searchMovies from "@salesforce/apex/MoviesController.searchMovies";
 
-import { subscribe, MessageContext, unsubscribe } from 'lightning/messageService';
-import REFRESH_LIST from '@salesforce/messageChannel/Refresh_List__c';
+import { refreshApex } from "@salesforce/apex";
 
 export default class MoviesList extends LightningElement {
+  @api
+  searchValue = "";
 
-    subscription = null;
+  @wire(searchMovies, { searchTerm: "$searchValue" })
+  movies;
 
-    @api searchValue = '';
-    
-    @wire(searchMovies, {searchTerm: '$searchValue' })
-    movies;
-
+  @api
+  refresh() {
+    refreshApex(this.movies);
+  }
 }

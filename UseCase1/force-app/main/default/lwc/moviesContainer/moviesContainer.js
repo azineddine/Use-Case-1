@@ -1,40 +1,41 @@
-import { LightningElement, wire } from 'lwc';
-import { subscribe, MessageContext, unsubscribe } from 'lightning/messageService';
-import REFRESH_LIST from '@salesforce/messageChannel/Refresh_List__c';
+import { LightningElement, wire } from "lwc";
+import {
+  subscribe,
+  MessageContext,
+  unsubscribe
+} from "lightning/messageService";
+import REFRESH_LIST from "@salesforce/messageChannel/Refresh_List__c";
 
 export default class MoviesContainer extends LightningElement {
+  @wire(MessageContext)
+  messageContext;
+  searchValue = "";
+  subscription = null;
+  isOpen = false;
 
-    searchValue = '';
-    subscription = null;
-    isOpen = false;
+  handleNewSearch(event) {
+    this.searchValue = event.detail;
+  }
 
-    handleNewSearch(event) {
-        this.searchValue = event.detail;
-    }
+  connectedCallback() {
+    this.subscription = subscribe(this.messageContext, REFRESH_LIST, () => {
+      this.refreshMoviesList();
+    });
+  }
 
-    @wire(MessageContext)
-    messageContext;
+  disconnectedCallback() {
+    unsubscribe(this.subscription);
+  }
 
-    /* connectedCallback() {
-        this.subscription = subscribe(this.messageContext, REFRESH_LIST, ()=>{
-            this.refreshMoviesList();
-        })
-    }
+  refreshMoviesList() {
+    this.template.querySelector("c-movies-results-lwc").refresh();
+  }
 
-    disconnectedCallback() {
-        unsubscribe(this.subscription);
-    }
+  openModal() {
+    this.isOpen = true;
+  }
 
-    refreshMoviesList() {
-        this.template.querySelector('c-movies-results-lwc').refresh();
-    } */
-
-    openModal() {
-        this.isOpen = true;
-    }
-
-    handleClose() {
-        this.isOpen = false;
-    }
-    
+  handleCloseModal() {
+    this.isOpen = false;
+  }
 }

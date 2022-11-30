@@ -2,6 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Number_of_movies__c</fullName>
     <externalId>false</externalId>
+    <defaultValue>0</defaultValue>
     <label>Number of movies</label>
     <precision>18</precision>
     <required>false</required>
