@@ -1,13 +1,8 @@
 import { LightningElement, api, wire, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-
-import { getRecord } from "lightning/uiRecordApi";
-
-import NAME_FIELD from "@salesforce/schema/Movie__c.Name";
-import MOVIE_OBJECT from "@salesforce/schema/Movie__c";
 import ACTOR_OBJECT from "@salesforce/schema/Actor__c";
-import MOVIE_ACTOR_OBJECT from "@salesforce/schema/MovieActor__c";
-
+import MOVIE_OBJECT from "@salesforce/schema/Movie__c";
+import NAME_FIELD from "@salesforce/schema/Movie__c.Name";
 import CATEGORY_FIELD from "@salesforce/schema/Movie__c.Category__c";
 import DESCRIPTION_FIELD from "@salesforce/schema/Movie__c.Description__c";
 import RELEASE_DATE_FIELD from "@salesforce/schema/Movie__c.Release_date__c";
@@ -15,9 +10,7 @@ import PICTURE_FIELD from "@salesforce/schema/Movie__c.Picture__c";
 import RATING_FIELD from "@salesforce/schema/Movie__c.Rating__c";
 import apexSearch from "@salesforce/apex/ActorsController.search";
 import apexCreateMovie from "@salesforce/apex/MoviesController.createMovie";
-
 import { getObjectInfo, getPicklistValues } from "lightning/uiObjectInfoApi";
-
 
 const CREATE_SUCCESS_TITLE = "Created with success";
 const CREATE_SUCCESS_MESSAGE = "You have created your record successfully";
@@ -27,34 +20,33 @@ const CREATE_ERROR_TITLE = "Error creating record";
 const CREATE_ERROR_VARIANT = "Error";
 
 export default class NewMovieModal extends LightningElement {
-  fields = [
-    NAME_FIELD,
-    CATEGORY_FIELD,
-    DESCRIPTION_FIELD,
-    RELEASE_DATE_FIELD,
-    PICTURE_FIELD
-  ];
   nameField = NAME_FIELD;
   categoryField = CATEGORY_FIELD;
   descriptionField = DESCRIPTION_FIELD;
   releaseDateField = RELEASE_DATE_FIELD;
   objectApiName = MOVIE_OBJECT;
   pictureField = PICTURE_FIELD;
-
+  @api
+  movie;
   @track
   objectData = {};
   selectedActorIds = [];
   initialSelection = [];
-
-  @api
-  movie;
-
+  @track
+  categoryPicklistValues = [];
+  defaultMovieRecordTypeId;
   hasRendered = false;
   _isopen = false;
 
-  defaultMovieRecordTypeId;
-  @track
-  categoryPicklistValues = [];
+  @api
+  get isopen() {
+    return this._isopen;
+  }
+
+  set isopen(value) {
+    this.hasRendered = false;
+    this._isopen = value;
+  }
 
   @wire(getObjectInfo, { objectApiName: MOVIE_OBJECT })
   objectInfo({ data, error }) {
@@ -67,33 +59,14 @@ export default class NewMovieModal extends LightningElement {
     recordTypeId: "$defaultMovieRecordTypeId",
     fieldApiName: CATEGORY_FIELD
   })
-  categoryPicklist({data,error}) {
-    if(data) {
+  categoryPicklist({ data, error }) {
+    if (data) {
       this.categoryPicklistValues = data.values;
     }
   }
 
-  @api
-  get isopen() {
-    return this._isopen;
-  }
-  set isopen(value) {
-    this.hasRendered = false;
-    this._isopen = value;
-  }
-
-  /*  @wire(getObjectInfo, { objectApiName: MOVIE_OBJECT })
-  objectInfo; */
-
-  // is called each time the movie is updated
   renderedCallback() {
-    if (
-      this.movie &&
-      Object.keys(this.movie).length > 0 &&
-      !this.hasRendered
-      // && Object.keys(this.objectData).length === 0
-    ) {
-
+    if (this.movie && Object.keys(this.movie).length > 0 && !this.hasRendered) {
       this.hasRendered = true;
 
       this.objectData = { ...this.movie };
@@ -109,7 +82,7 @@ export default class NewMovieModal extends LightningElement {
           };
         });
         this.selectedActorIds = this.initialSelection.map((actor) => {
-          return actor.id
+          return actor.id;
         });
       }
     }
@@ -169,25 +142,6 @@ export default class NewMovieModal extends LightningElement {
     const refreshEvent = new CustomEvent("refresh");
     this.dispatchEvent(refreshEvent);
   }
-
-  /*  handleCancel() {
-    this.sendEvent();
-  }
- */
-  /* handleSuccess() {
-    this.showToastMessage(
-      CREATE_SUCCESS_TITLE,
-      CREATE_SUCCESS_MESSAGE,
-      CREATE_SUCCESS_VARIANT
-    );
-
-    this.sendEvent();
-  } */
-
-  /* sendEvent() {
-    const modalEvent = new CustomEvent("close");
-    this.dispatchEvent(modalEvent);
-  } */
 
   showToastMessage(title, message, variant) {
     const event = new ShowToastEvent({

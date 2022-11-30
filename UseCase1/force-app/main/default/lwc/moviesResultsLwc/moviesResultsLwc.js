@@ -4,14 +4,14 @@ import searchMovies from "@salesforce/apex/MoviesController.searchMovies";
 import { refreshApex } from "@salesforce/apex";
 
 export default class MoviesList extends LightningElement {
-  subscription = null;
-
-  @api searchValue = "";
+  @api
+  searchValue = "";
 
   @wire(searchMovies, { searchTerm: "$searchValue" })
   movies;
 
-  @api refresh() {
+  @api
+  refresh() {
     refreshApex(this.movies);
   }
 }

@@ -53,9 +53,6 @@
         class="slds-m-bottom_x-small"
         value={objectData.Picture__c}
       ></lightning-input>
-      <c-star-ratings rating={objectData.Rating__c} onratingchange={handleRatingChange} static-color="#f6da3f">
-
-      </c-star-ratings>
       <c-lookup
         onsearch={handleSearchActor}
         onselectionchange={handleSelectionActor}
@@ -64,6 +61,12 @@
         selection={initialSelection}
       >
       </c-lookup>
+      <c-star-ratings
+        rating={objectData.Rating__c}
+        onratingchange={handleRatingChange}
+        static-color="#f6da3f"
+      >
+      </c-star-ratings>
     </div>
   </c-custom-modal>
 </template>

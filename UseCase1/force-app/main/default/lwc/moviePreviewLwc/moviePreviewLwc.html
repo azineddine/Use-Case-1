@@ -1,28 +1,41 @@
 <template>
   <lightning-card title="Movie Details">
     <template if:true={movieId}>
-      <div class="slds-region_narrow" style="width: 360px">
-        <dl class="slds-dl_horizontal slds-m-around_small">
-          <dt class="slds-dl_horizontal__label">Name :</dt>
-          <dd class="slds-dl_horizontal__detail">{movie.Name}</dd>
-          <dt class="slds-dl_horizontal__label">Release Date :</dt>
-          <dd class="slds-dl_horizontal__detail">{movie.Release_date__c}</dd>
-          <dt class="slds-dl_horizontal__label">Category :</dt>
-          <dd class="slds-dl_horizontal__detail">{movie.Category__c}</dd>
-          <dt class="slds-dl_horizontal__label">Description :</dt>
-          <dd class="slds-dl_horizontal__detail">{movie.Description__c}</dd>
-          <dt class="slds-dl_horizontal__label">Rating :</dt>
-          <dd class="slds-dl_horizontal__detail">
+
+     <div >
+      <lightning-layout pull-to-boundary="medium" padding="horizontal-medium">
+
+        <lightning-layout-item flexibility="auto" padding="horizontal-small" class="slds-align_absolute-center">
+          <div class="slds-region_narrow slds-p-left_x-large slds-p-bottom_large" style="width: 290px">
             <c-star-ratings
-              read-only-star
-              static-color="#f6da3f"
-              rating={movie.Rating__c}
-            >
-            </c-star-ratings>
-          </dd>
+            read-only-star
+            static-color="#f6da3f"
+            rating={movie.Rating__c}
+          >
+          </c-star-ratings>
+          <template if:true={movie.Picture__c}>
+            <img
+              style="max-height: 200px"
+              alt="Image on T.O."
+              src={movie.Picture__c}
+            />
+          </template>
+          </div>
+          </lightning-layout-item>
+          
+        <lightning-layout-item flexibility="auto" padding="horizontal-medium">
+          <dl class="slds-dl_horizontal slds-m-around_small">
+          <dt class="slds-dl_horizontal__label label">Name : </dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Name}</dd>
+          <dt class="slds-dl_horizontal__label label">Release Date : </dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Release_date__c}</dd>
+          <dt class="slds-dl_horizontal__label label">Category : </dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Category__c}</dd>
+          <dt class="slds-dl_horizontal__label label">Description : </dt>
+          <dd class="slds-dl_horizontal__detail">{movie.Description__c}</dd>
 
           <template if:true={hasActors}>
-            <dt class="slds-dl_horizontal__label">Actors :</dt>
+            <dt class="slds-dl_horizontal__label label">Actors :</dt>
             <dd class="slds-dl_horizontal__detail">
               <ul>
                 <template for:each={movie.Actors} for:item="actor">
@@ -32,16 +45,13 @@
             </dd>
           </template>
 
-          <template if:true={movie.Picture__c}>
-            <img
-              style="max-height: 400px"
-              alt="Image on T.O."
-              src={movie.Picture__c}
-            />
-          </template>
+        
         </dl>
-      </div>
+      </lightning-layout-item>
+      </lightning-layout>
+     
 
+     </div>
       <c-new-movie-modal
         isopen={isOpen}
         onclosemodal={handleCloseModal}
@@ -49,8 +59,7 @@
         movie={movie}
       ></c-new-movie-modal>
 
-     <!--  <template if:true={isViewMode}> -->
-        <div class="slds-grid_align-center">
+        <div class="slds-grid_align-center slds-p-left_x-large">
           <lightning-button
             variant="brand"
             class="slds-var-m-top_small slds-var-m-left_x-small"
@@ -66,7 +75,6 @@
             onclick={handleDeleteBtn}
           ></lightning-button>
         </div>
-     <!--  </template> -->
     </template>
 
     <template if:false={movieId}>

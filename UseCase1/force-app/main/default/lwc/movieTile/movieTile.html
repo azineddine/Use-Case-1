@@ -2,24 +2,27 @@
   <lightning-card onclick={previewMovie}>
     <template if:true={movie.Picture__c}>
       <img
-      style="max-height: 400px"
-      alt="Image on T.O."
-      src={movie.Picture__c}
-    />
+        style="max-height: 400px"
+        alt="Image on T.O."
+        src={movie.Picture__c}
+      />
     </template>
     <template if:false={movie.Picture__c}>
       <img
-      style="height: 200px"
-      alt="Image on T.O."
-      src="https://www.reelviews.net/resources/img/default_poster.jpg"
-    />
+        style="height: 200px"
+        alt="Image on T.O."
+        src="https://www.reelviews.net/resources/img/default_poster.jpg"
+      />
     </template>
-   
-    
-    <p class="slds-p-horizontal_small">Name : {movie.Name}</p>
 
-    <p class="slds-p-horizontal_small">Category : {movie.Category__c}</p>
+    <div class="slds-p-around_medium ">
+      <p class="slds-p-horizontal_small"><b>Name :</b> {movie.Name}</p>
 
-    <p class="slds-p-horizontal_small">Released At : {movie.Release_date__c}</p>
+      <p class="slds-p-horizontal_small"><b>Category :</b> {movie.Category__c}</p>
+  
+      <p class="slds-p-horizontal_small"><b>Released At : </b>{movie.Release_date__c}</p>
+    </div>
+
+  
   </lightning-card>
 </template>

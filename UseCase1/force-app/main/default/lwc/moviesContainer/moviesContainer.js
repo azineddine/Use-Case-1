@@ -7,6 +7,8 @@ import {
 import REFRESH_LIST from "@salesforce/messageChannel/Refresh_List__c";
 
 export default class MoviesContainer extends LightningElement {
+  @wire(MessageContext)
+  messageContext;
   searchValue = "";
   subscription = null;
   isOpen = false;
@@ -14,9 +16,6 @@ export default class MoviesContainer extends LightningElement {
   handleNewSearch(event) {
     this.searchValue = event.detail;
   }
-
-  @wire(MessageContext)
-  messageContext;
 
   connectedCallback() {
     this.subscription = subscribe(this.messageContext, REFRESH_LIST, () => {
